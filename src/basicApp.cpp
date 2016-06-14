@@ -31,7 +31,12 @@
 
 // CLANG / GCC compiler flags: -std=c++14 -Os
 
+// Execution time (average):
+// Old Structure training:      41000 ms
+// New Structure training:      37500 ms
+
 #include "NeuralNet.h"
+#include "MNIST.h"
 
 using namespace std;
 using namespace chrono;

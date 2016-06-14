@@ -34,6 +34,7 @@
 		D007158F1D0FE77E0074F616 /* t10k-labels.idx1-ubyte */ = {isa = PBXFileReference; lastKnownFileType = file; path = "t10k-labels.idx1-ubyte"; sourceTree = "<group>"; };
 		D00715901D0FE77E0074F616 /* train-images.idx3-ubyte */ = {isa = PBXFileReference; lastKnownFileType = file; path = "train-images.idx3-ubyte"; sourceTree = "<group>"; };
 		D00715911D0FE77E0074F616 /* train-labels.idx1-ubyte */ = {isa = PBXFileReference; lastKnownFileType = file; path = "train-labels.idx1-ubyte"; sourceTree = "<group>"; };
+		D00715921D0FEA180074F616 /* Layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Layer.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,8 +71,9 @@
 			children = (
 				D00054871D08483200E50F16 /* basicApp.cpp */,
 				D000548B1D08483200E50F16 /* Settings.h */,
-				D000548A1D08483200E50F16 /* Neuron.h */,
 				D00054891D08483200E50F16 /* NeuralNet.h */,
+				D00715921D0FEA180074F616 /* Layer.h */,
+				D000548A1D08483200E50F16 /* Neuron.h */,
 				D00054881D08483200E50F16 /* MNIST.h */,
 			);
 			name = src;

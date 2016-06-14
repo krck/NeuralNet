@@ -28,19 +28,13 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                     *
  *                                                                                   *
  *************************************************************************************/
-// ----------------------------------------------------------------------------
-// -------------- Neuron.h and NeuralNet.h currently based on the -------------
-// --------- tutorial by: David Miller, http://millermattson.com/dave ---------
-// --- See the associated video for instructions: http://vimeo.com/19569529 ---
-// ----------------------------------------------------------------------------
 
 #pragma once
 #ifndef NeuralNet_h
 #define NeuralNet_h
 
 #include "Settings.h"
-#include "Neuron.h"
-#include "MNIST.h"
+#include "Layer.h"
 
 class NeuralNet {
 private:
@@ -50,90 +44,59 @@ private:
     
 public:
     NeuralNet(const Topology& topology) : netError(0.0), recentAverageError(0.0) {
-        for (ulong i = 0; i < topology.size(); ++i) {
-            this->layers.push_back(Layer());
-            // Get the number of Neurons in the next layer (If next is the Output Layer, then 0)
-            const ulong numOutputs = (i == topology.size() - 1 ? 0 : topology[i + 1]);
-            // Add all the Neuros to each layer (+ 1 to add the Bias Neuron in every Layer)
-            for (ulong j = 0; j < (topology[i] + 1); ++j) {
-                this->layers.back().push_back( Neuron(numOutputs, j) );
+        // Network needs at least 2 Layers (1 Input & 1 Output)
+        if(topology.size() >= 2) {
+            // Create every Layer in the Net
+            this->layers.push_back(Layer(topology[0], topology[1], LayerType::Input));
+            for(ulong i = 1; i < topology.size() - 1; i++) {
+                this->layers.push_back(Layer(topology[i], topology[i + 1], LayerType::Hidden));
             }
-            // Set the Bias Neurons output value to 1.0 (Last Neuron of each Layer)
-            this->layers.back().back().setOutputValue(1.0f);
-        }
+            this->layers.push_back(Layer(topology.back(), 0, LayerType::Output));
+        } else { std::cout <<"ERROR: Trying to create a Network wiht less than 2 Layers" <<std::endl; }
     }
+    
     
     void feedForward(const std::vector<double>& inputValues) {
-        // check if there is one input Value for each input Neuron (- Bias)
-        if(inputValues.size() == (this->layers[0].size() - 1)) {
-            // Assign all input values to input Neurons
-            for (ulong i = 0; i < inputValues.size(); ++i) {
-                this->layers[0][i].setOutputValue(inputValues[i]);
-            }
-            // Forward Propagate:
-            // Loop throug each Layer (and each Neuron of the Layer) and call "feedForward"
-            // (Start at 1 because the Input-Layer values are assigned already)
-            for(ulong i = 1; i < this->layers.size(); ++i) {
-                Layer& previousLayer = this->layers[i-1];
-                for(ulong j = 0; j < this->layers[i].size() - 1; ++j) {
-                    this->layers[i][j].feedForward(previousLayer);
-                }
-            }
+        // Pass the input values to the input Layer
+        this->layers.front().setInputValues(inputValues);
+        // Forward Propagate:
+        // Loop throug each Layer (and each Neuron of the Layer) and "feedForward"
+        // (Start at 1 because the Input-Layer values are assigned already)
+        for(ulong i = 1; i < this->layers.size(); i++) {
+            this->layers[i].feedForward(this->layers[i-1]);
         }
     }
     
+    
     void backPropagate(const std::vector<double>& expOutputs) {
-        // Calculate the overall net error
-        // RMS (Root Mean Square Error) of all output neuron errors
-        // Value going to be minimized throug the back propagation (hopefully ...)
-        this->netError = 0.0;
-        Layer& outputLayer = this->layers.back();
-        // Add up all the deltas between actual output and expected output
-        // ( - 1 because Output-Layer Bias Neuron does not count)
-        for(ulong i = 0; i < outputLayer.size() - 1; ++i) {
-            const double delta = expOutputs[i] - outputLayer[i].getOutputValue();
-            // netError stores the sum of the squares of all output value deltas
-            this->netError += delta * delta;
-        }
-        // Get the average (squared) error delta
-        this->netError /= (outputLayer.size() - 1);
-        // Take the square root, to get the RMS
-        this->netError = sqrt(netError);
-        // Implement a recent average measurement
+        // Get the overall net error and calculate the recent average measurement
+        // This value going to be minimized throug the back propagation (hopefully ...)
+        this->netError = this->layers.back().getError(expOutputs);
         this->recentAverageError = (recentAverageError * SMOOTHING_FACTOR + netError) / (SMOOTHING_FACTOR + 1.0);
         // Gradients
+        // (While Training the Net: The gradient pushes Neuron outputs in
+        //  the direction that will reduce the overall error value)
         // Calculate output layer gradients
-        for(ulong i = 0; i < (outputLayer.size() - 1); ++i) {
-            outputLayer[i].calculateOutputGradient(expOutputs[i]);
-        }
+        this->layers.back().calculateGradients(expOutputs);
         // Calcualte hidden layer gradients
         // (Loop backwards from the penultimate Layer to the second layer ... through all hidden Layers)
-        for (ulong i = (this->layers.size() - 2); i > 0; --i) {
-            Layer& hidden = this->layers[i];
-            Layer& next = this->layers[i+1];
-            for (ulong n = 0; n < hidden.size(); ++n) { hidden[n].calculateHiddenGradient(next); }
+        for (ulong i = (this->layers.size() - 2); i > 0; i--) {
+            this->layers[i].calculateGradients(this->layers[i+1]);
         }
         // Update the connection weights
         // (Loop from the output Layer backwards to the first hidden layer / Input Layer has no weights coming in)
-        for (ulong i = (layers.size() - 1); i > 0; --i) {
-            Layer& currLayer = layers[i];
-            Layer& prevLayer = layers[i - 1];
-            for (unsigned n = 0; n < (currLayer.size() - 1); ++n) {
-                currLayer[n].updateInputWeights(prevLayer);
-            }
-        }
+        for (ulong i = (layers.size() - 1); i > 0; i--) { this->layers[i].updateWeights(this->layers[i-1]); }
     }
     
-    // Get all the Output Layer Neurons Values
-    std::vector<double> getResults() const {
-        std::vector<double> tmpres;
-        const Layer& outputLayer = this->layers.back();
-        // Exclude last neuron (bias neuron)
-        for (ulong i = 0; i < outputLayer.size() - 1; ++i) {
-            tmpres.push_back(outputLayer[i].getOutputValue());
-        }
-        return tmpres;
+    
+    void exportNet(const std::string& path) {
+        
     }
+    
+    
+    // Get all the Output Layer Neurons Values
+    inline std::vector<double> getResults() { return this->layers.back().getResults(); }
+    
     
     // GETTER - SETTER
     inline double getNetError(void) const { return this->netError; }
