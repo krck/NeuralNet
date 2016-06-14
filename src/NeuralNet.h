@@ -101,14 +101,14 @@ public:
             for(const Layer& l : this->layers) {
                 file <<"\n\nLayer:\n";
                 for(const Neuron& n : l.getNeurons()) {
-                    file <<"\n\nNeuron:\nNumber: " <<n.getIndex() <<"\tOutput: " <<n.getOutputValue() <<"\tGradient: " <<n.getGradient() <<"\n";
-//                    file <<"Weights:\n";
-//                    int count = 0;
-//                    for(const Connection& c : n.getOutputWeights()) {
-//                        file <<c.weight <<" ";
-//                        if(count == 10) { file <<"\n"; count = 0; }
-//                        count++;
-//                    }
+                    file <<"\n\nNeuron:\nNumber: " <<n.index <<"\tOutput: " <<n.outputValue <<"\tGradient: " <<n.gradient <<"\n";
+                    file <<"Weights:\n";
+                    int count = 0;
+                    for(const Connection& c : n.outputWeights) {
+                        file <<c.weight <<" ";
+                        if(count == 10) { file <<"\n"; count = 0; }
+                        count++;
+                    }
                 }
             }
         } else {

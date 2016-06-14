@@ -51,7 +51,7 @@ public:
         for(ulong i = 0; i < nCount; i++) { neurons.push_back(Neuron(nCountNext, i)); }
         // Add one Bias Neuron to the Layer and set the output value to 1.0
         neurons.push_back(Neuron(nCountNext, neurons.size()));
-        neurons.back().setOutputValue(1.0f);
+        neurons.back().outputValue = 1.0f;
     }
     
     
@@ -60,7 +60,7 @@ public:
             // Check if there is one input Value for each input Neuron (- Bias)
             if(inputValues.size() == this->getNeuronCountNoBias()) {
                 // Assign all InputValues to the InputNeurons
-                for(ulong i = 0; i < inputValues.size(); i++) { this->neurons[i].setOutputValue(inputValues[i]); }
+                for(ulong i = 0; i < inputValues.size(); i++) { this->neurons[i].outputValue = inputValues[i]; }
             } else { std::cout <<"ERROR: Ammount of InputValues not equal to InputNeurons" <<std::endl; }
         } else { std::cout <<"ERROR: Trying to set InputValues on a non Input-Layer" <<std::endl; }
     }
@@ -69,12 +69,12 @@ public:
     void feedForward(const Layer& prev) {
         // Forward Propagate the inputValues throug each Neuron of the Layer (- Bias)
         for(ulong i = 0; i < this->getNeuronCountNoBias(); i++) {
-            const ulong index = this->neurons[i].getIndex();
+            const ulong index = this->neurons[i].index;
             double sum = 0.0f;
             // Sum up all Outputs from the previous Layer (with the Bias Neuron)
-            for(const Neuron& n : prev.getNeurons()) { sum += (n.getOutputValue() * n.getOutputWeight(index).weight); }
+            for(const Neuron& n : prev.getNeurons()) { sum += (n.outputValue * n.outputWeights[index].weight); }
             // Apply activation / transfer Function to shape the output value
-            this->neurons[i].setOutputValue(transferFunction(sum));
+            this->neurons[i].outputValue = sigmoidFunction(sum);
         }
     }
     
@@ -83,10 +83,9 @@ public:
     void calculateGradients(const std::vector<double>& expOutputs) {
         if(this->type == LayerType::Output) {
             for(ulong i = 0; i < this->getNeuronCountNoBias(); i++) {
-                const double outputVal = this->neurons[i].getOutputValue();
+                const double outputVal = this->neurons[i].outputValue;
                 const double delta = expOutputs[i] - outputVal;
-                // Multiply the delta by the derivative of the output value
-                this->neurons[i].setGradient(delta * transferFunctionDerivative(outputVal));
+                this->neurons[i].gradient = delta * gradientFunction(outputVal);
             }
         } else { std::cout <<"ERROR: Trying to calculate OutputGradients on a non Output-Layer" <<std::endl; }
     }
@@ -97,14 +96,13 @@ public:
     void calculateGradients(const Layer& next) {
         if(this->type == LayerType::Hidden) {
             for(ulong i = 0; i < this->getNeuronCount(); i++) {
-                const double outputVal = this->neurons[i].getOutputValue();
+                const double outputVal = this->neurons[i].outputValue;
                 double dow = 0.0f;
                 // Sum up all contributions of the errors, to the Neurons in the next Layer
                 for(ulong j = 0; j < next.getNeuronCountNoBias(); j++) {
-                    dow += (this->neurons[i].getOutputWeight(j).weight * next.getNeuron(j).getGradient());
+                    dow += (this->neurons[i].outputWeights[j].weight * next.getNeuron(j).gradient);
                 }
-                // std::cout <<dow <<std::endl;
-                this->neurons[i].setGradient(dow * transferFunctionDerivative(outputVal));
+                this->neurons[i].gradient = dow * gradientFunction(outputVal);
             }
         } else { std::cout <<"ERROR: Trying to calculate HiddenGradients on a non Hidden-Layer" <<std::endl; }
     }
@@ -116,13 +114,13 @@ public:
         // (Update all weights, including Bias)
         for (ulong n = 0; n < this->getNeuronCountNoBias(); n++) {
             for (ulong j = 0; j < prev.getNeuronCount(); j++) {
-                Neuron& tmpN = prev.getNeuron(j);
-                const double oldDeltaWeight = tmpN.getOutputWeight(this->neurons[n].getIndex()).deltaWeight;
+                Neuron& prevNeuron = prev.getNeuron(j);
+                const double oldDeltaWeight = prevNeuron.outputWeights[this->neurons[n].index].deltaWeight;
                 // Individual input, magnified by the gradient and the learning rate (ETA n),
                 // and also add momentum (alpha): a fraction of the previous delta weight
-                const double newDeltaWeight = (ETA * tmpN.getOutputValue() * this->neurons[n].getGradient()) + (ALPHA * oldDeltaWeight);
-                tmpN.getOutputWeight(this->neurons[n].getIndex()).deltaWeight = newDeltaWeight;
-                tmpN.getOutputWeight(this->neurons[n].getIndex()).weight += newDeltaWeight;
+                const double newDeltaWeight = (ETA * prevNeuron.outputValue * this->neurons[n].gradient) + (ALPHA * oldDeltaWeight);
+                prevNeuron.outputWeights[this->neurons[n].index].deltaWeight = newDeltaWeight;
+                prevNeuron.outputWeights[this->neurons[n].index].weight += newDeltaWeight;
             }
         }
         
@@ -137,7 +135,7 @@ public:
                 // RMS (Root Mean Square Error) of all output neuron errors
                 // Add up all the deltas between actual outputs and expected outputs (- 1 Bias)
                 for(ulong i = 0; i < this->getNeuronCountNoBias(); i++) {
-                    const double delta = expOutputs[i] - this->neurons[i].getOutputValue();
+                    const double delta = expOutputs[i] - this->neurons[i].outputValue;
                     // tmperror stores the sum of the squares of all output value deltas
                     tmperror += (delta * delta);
                 }
@@ -157,7 +155,7 @@ public:
         if(this->type == LayerType::Output) {
             // Sum up all the Outputs from the Layer (- Bias)
             for(ulong i = 0; i < this->getNeuronCountNoBias(); i++) {
-                tmpres.push_back(this->neurons[i].getOutputValue());
+                tmpres.push_back(this->neurons[i].outputValue);
             }
         } else { std::cout <<"ERROR: Trying to get Results from a non Output-Layer" <<std::endl; }
         return tmpres;
@@ -172,11 +170,12 @@ public:
     inline Neuron& getNeuron(ulong index) { return this->neurons[index]; }
     
 private:
-                                                                // return tanh(sum);
-    inline double transferFunction(double sum) const { return  1.0f / (1.0f + exp(sum * -1.0f)); }
+    // The Sigmoid Function (having an S shaped curve) produces a output value between 0.0 and 1.0
+    // Definition:  s(t) = 1 / 1 + e^-t
+    inline double sigmoidFunction(double sum) const { return  (1.0f / (1.0f + exp(sum * -1.0f))); }
     
-                                                                            // return (1.0 - (sum * sum));
-    inline double transferFunctionDerivative(double sum) const { return (exp(sum * -1.0f) / pow(exp(sum * -1.0f) + 1.0f, 2.0f)); }
+    // OLD "transferFunctionDerivative": return (1.0 - (sum * sum));
+    inline double gradientFunction(double sum) const { return (exp(sum * -1.0f) / pow(exp(sum * -1.0f) + 1.0f, 2.0f)); }
     
 };
 

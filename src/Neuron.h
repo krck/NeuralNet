@@ -43,31 +43,17 @@ struct Connection {
     Connection() : weight(RAND_0to1), deltaWeight(0.0f) { }
 };
 
-
-class Neuron {
-private:
+// Simple Sigmoid Neuron
+struct Neuron {
     const ulong index;                          // Index of the Neuron in it's Layer
     double outputValue;                         // Value of the Neuron given to all Neurons in the next Layer
     double gradient;                            // used by the backpropagation
     std::vector<Connection> outputWeights;      // Output weight values for all connected Neurons in the next Layer
     
-public:
     Neuron(ulong numOutputs, ulong ind) : index(ind), outputValue(0.0f), gradient(0.0f) {
         // Fully connected Net: One Connection for each Neuron in the next Layer
         this->outputWeights = std::vector<Connection>(numOutputs);
     }
-    
-public:
-    // GETTER - SETTER
-    inline void setOutputValue(double value) { this->outputValue = value; }
-    inline void setGradient(double value) { this->gradient = value; }
-    inline double getOutputValue() const { return  this->outputValue; }
-    inline double getGradient() const { return  this->gradient; }
-    inline ulong getIndex() const { return this->index; }
-    inline Connection& getOutputWeight(ulong i) { return this->outputWeights[i]; }
-    inline Connection getOutputWeight(ulong i) const { return this->outputWeights[i]; }
-    inline std::vector<Connection> getOutputWeights() const { return this->outputWeights; }
-    
 };
 
 #endif
