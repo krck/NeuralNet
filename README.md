@@ -1,13 +1,9 @@
 
-<h1> Neural Network to read handwritten digits </h1><br>
+<h1> Neural Network to recognize handwritten digits </h1><br>
 
-<b> TODO </b>
-- Fix the Neural Net !
-
-<b> About the Neural Net </b> <br>
-This is a simple feed forward Neural Network and the <br>
-current implementation is based on the tutorial by: <br>
-David Miller http://vimeo.com/19569529
+<b> About the Neural Network </b> <br>
+This is a simple, fully connected, feed forward <br>
+and backpropagation Neural Network written in C++ <br>
 
 <b> About MNIST: </b> <br>
 http://yann.lecun.com/exdb/mnist/ <br>
@@ -21,3 +17,9 @@ The digits have been size-normalized and centered in a fixed-size image (28x28) 
 It is a good database for people who want to try learning techniques <br>
 and pattern recognition methods on real-world data while spending minimal <br> 
 efforts on preprocessing and formatting. <br>
+
+<b> TODO </b>
+- <DONE!> Fix the neural net !
+- Add Network Export & Import
+- Enable multiple training iterations
+- Cleanup and optimization

@@ -66,6 +66,7 @@ public:
     inline ulong getIndex() const { return this->index; }
     inline Connection& getOutputWeight(ulong i) { return this->outputWeights[i]; }
     inline Connection getOutputWeight(ulong i) const { return this->outputWeights[i]; }
+    inline std::vector<Connection> getOutputWeights() const { return this->outputWeights; }
     
 };
 

@@ -31,10 +31,6 @@
 
 // CLANG / GCC compiler flags: -std=c++14 -Os
 
-// Execution time (average):
-// Old Structure training:      41000 ms
-// New Structure training:      37500 ms
-
 #include "NeuralNet.h"
 #include "MNIST.h"
 
@@ -45,7 +41,7 @@ int main() {
     
     const auto timePoint1 = steady_clock::now();
     
-    NeuralNet net = NeuralNet({784, 100, 10});
+    NeuralNet net = NeuralNet(LAYER_NEURON_TOPOLOGY);
     MNIST mnist = MNIST(PATH);
     
     const auto timePoint2 = steady_clock::now();
@@ -57,13 +53,10 @@ int main() {
     }
     
     const auto timePoint3 = steady_clock::now();
-
+    
     
     
     if(DEBUG_OUTPUT) {
-//        cout <<"The first 10 MNIST characters are: " <<endl;
-//        mnist.testPrintout(0, 10);
-
         double errSum = 0.0f;
         for(const auto& t : mnist.testData) {
             net.feedForward(t.pixelData);
@@ -73,17 +66,17 @@ int main() {
         
         const auto timePoint4 = steady_clock::now();
         
-        // try three random digits
+        // TEST THE NET WITH THREE RANDOM DIGITS FROM THE MNIST TEST SET
         std::cout <<"\n\nVisualise result, by testing 3 random digits: " <<std::endl;
-        std::vector<MNISTchar> test {mnist.testData[rand()%10000], mnist.testData[rand()%10000], mnist.testData[rand()%10000]};
-        // Feed all possible AND combinations and print the results
+        std::vector<MNISTchar> test {mnist.testData[2347], mnist.testData[6345], mnist.testData[8754]};
         for(const MNISTchar& in : test) {
             net.feedForward(in.pixelData);
-            std::cout <<"\nThe Number is: " <<in.label <<std::endl;
+            mnist.testPrintout(in);
             std::cout <<"Expected Values:\tOutput Values:" <<std::endl;
             const auto result = net.getResults();
             for(int i = 0; i < in.output.size(); i++) {
-                std::cout <<in.output[i] <<"\t\t\t\t\t" <<result[i] <<std::endl;
+                std::cout <<in.output[i] <<"\t\t\t\t\t";
+                printf("%.5f\n", result[i]);
             }
         }
         

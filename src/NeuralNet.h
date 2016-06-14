@@ -89,8 +89,31 @@ public:
     }
     
     
+    // Export Neuron data
+    // (Currently "all data" to debug, later mainly the topology and the neuron weights)
     void exportNet(const std::string& path) {
-        
+        // use hardcoded path for simple debugging
+        const std::string tmppath = "/Users/peter/Desktop/testexp.txt";
+        std::fstream file (tmppath, std::ifstream::out | std::ifstream::binary);
+        if(file.is_open()) {
+            file <<"Neural Network Topology:" <<"\n";
+            for(int n : LAYER_NEURON_TOPOLOGY) { file <<n <<"; "; }
+            for(const Layer& l : this->layers) {
+                file <<"\n\nLayer:\n";
+                for(const Neuron& n : l.getNeurons()) {
+                    file <<"\n\nNeuron:\nNumber: " <<n.getIndex() <<"\tOutput: " <<n.getOutputValue() <<"\tGradient: " <<n.getGradient() <<"\n";
+//                    file <<"Weights:\n";
+//                    int count = 0;
+//                    for(const Connection& c : n.getOutputWeights()) {
+//                        file <<c.weight <<" ";
+//                        if(count == 10) { file <<"\n"; count = 0; }
+//                        count++;
+//                    }
+                }
+            }
+        } else {
+            std::cout <<"ERROR: Unable to export Neural Network data" <<std::endl;
+        }
     }
     
     

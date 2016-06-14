@@ -112,28 +112,23 @@ private:
     
     
 public:
-    void testPrintout(int startChar, int endChar) const {
-        for(int i = startChar; i < endChar; i++) {
-            std::cout <<"------------------------------" <<std::endl;
-            int count = 0;
-            for (const double& r : trainingData[i].pixelData) {
-                if(count < 27) {
-                    if(r < 0.25) std::cout <<" ";
-                    else if(r < 0.5) std::cout <<"-";
-                    else if(r < 0.75) std::cout <<"+";
-                    else if(r <= 1.0) std::cout <<"#";
-                    ++count;
-                } else {
-                    std::cout <<std::endl;
-                    count = 0;
-                }
+    void testPrintout(const MNISTchar& mchar) const {
+        std::cout <<"------------------------------" <<std::endl;
+        int count = 0;
+        for (const double& r : mchar.pixelData) {
+            if(count < 27) {
+                if(r < 0.25) std::cout <<" ";
+                else if(r < 0.5) std::cout <<"-";
+                else if(r < 0.75) std::cout <<"+";
+                else if(r <= 1.0) std::cout <<"#";
+                ++count;
+            } else {
+                std::cout <<std::endl;
+                count = 0;
             }
-            std::cout <<" Expected Output: ";
-            for(const short& x : trainingData[i].output) { std::cout <<x; }
-            std::cout <<std::endl;
-            std::cout <<"\t\tThis is a: " <<trainingData[i].label  <<std::endl;
-            std::cout <<"------------------------------" <<std::endl;
         }
+        std::cout <<"\t\tThis is a: " <<mchar.label  <<std::endl;
+        std::cout <<"------------------------------" <<std::endl;
     }
     
     

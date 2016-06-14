@@ -172,13 +172,13 @@ public:
     inline Neuron& getNeuron(ulong index) { return this->neurons[index]; }
     
 private:
-    // Transfer Function in this case: Return hyperbolic tangent of the sum
-    // tanh curve will have an output range from -1.0 to 1.0
-    inline double transferFunction(double sum) const { return tanh(sum); }
+                                                                // return tanh(sum);
+    inline double transferFunction(double sum) const { return  1.0f / (1.0f + exp(sum * -1.0f)); }
     
-    // Not the actual (but a approximated) hyperbolic tangent derivative is used here (!)
-    inline double transferFunctionDerivative(double sum) const { return (1.0 - (sum * sum)); }
+                                                                            // return (1.0 - (sum * sum));
+    inline double transferFunctionDerivative(double sum) const { return (exp(sum * -1.0f) / pow(exp(sum * -1.0f) + 1.0f, 2.0f)); }
     
 };
 
 #endif
+
