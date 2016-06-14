@@ -19,7 +19,7 @@ and pattern recognition methods on real-world data while spending minimal <br>
 efforts on preprocessing and formatting. <br>
 
 <b> TODO </b>
-- <DONE!> Fix the neural net !
+- <b>DONE</b> Fix the neural net
 - Add Network Export & Import
 - Enable multiple training iterations
 - Cleanup and optimization
