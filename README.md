@@ -20,6 +20,8 @@ efforts on preprocessing and formatting. <br>
 
 <b> TODO </b>
 - <b>DONE</b> Fix the neural net
+- <b>DONE</b> Add test Function and test Export
 - Add Network Export & Import
-- Enable multiple training iterations
-- Cleanup and optimization
+- <b>DONE</b> Enable multiple training iterations
+- <b>DONE</b> Cleaned up main() Function
+- Further cleanup and optimization

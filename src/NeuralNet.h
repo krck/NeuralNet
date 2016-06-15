@@ -34,6 +34,7 @@
 #define NeuralNet_h
 
 #include "Settings.h"
+#include "MNIST.h"
 #include "Layer.h"
 
 class NeuralNet {
@@ -56,6 +57,22 @@ public:
     }
     
     
+    // Feed forward all the input data and backpropagate with the according output data
+    void train(const MNIST& mnist) {
+        for(int i = 0; i < TRAINING_ITER; i++) {
+            for(const auto& t : mnist.trainingData) {
+                feedForward(t.pixelData);
+                backPropagate(t.output);
+            }
+        }
+    }
+    
+    
+    // Get all the Output Layer Neurons Values
+    inline std::vector<double> getResults() { return this->layers.back().getResults(); }
+
+    
+private:
     void feedForward(const std::vector<double>& inputValues) {
         // Pass the input values to the input Layer
         this->layers.front().setInputValues(inputValues);
@@ -89,41 +106,71 @@ public:
     }
     
     
-    // Export Neuron data
-    // (Currently "all data" to debug, later mainly the topology and the neuron weights)
-    void exportNet(const std::string& path) {
-        // use hardcoded path for simple debugging
-        const std::string tmppath = "/Users/peter/Desktop/testexp.txt";
-        std::fstream file (tmppath, std::ifstream::out | std::ifstream::binary);
-        if(file.is_open()) {
-            file <<"Neural Network Topology:" <<"\n";
-            for(int n : LAYER_NEURON_TOPOLOGY) { file <<n <<"; "; }
-            for(const Layer& l : this->layers) {
-                file <<"\n\nLayer:\n";
-                for(const Neuron& n : l.getNeurons()) {
-                    file <<"\n\nNeuron:\nNumber: " <<n.index <<"\tOutput: " <<n.outputValue <<"\tGradient: " <<n.gradient <<"\n";
-                    file <<"Weights:\n";
-                    int count = 0;
-                    for(const Connection& c : n.outputWeights) {
-                        file <<c.weight <<" ";
-                        if(count == 10) { file <<"\n"; count = 0; }
-                        count++;
-                    }
-                }
+public:
+    void exportNeuralNet(const std::string& exportPath) { }
+    void importNeuralNet(const std::string& importPath) { }
+    
+    
+    // Feed the test data to the net and write all results to a file
+    void test(MNIST& mnist, const std::string& resultsPath) {
+        double errSum = 0.0f;
+        int recognizeCount = 0;
+        std::vector<std::string> outputStrings = std::vector<std::string>();
+        // Add some general output with the overall error values
+        outputStrings.push_back("Overall Network Error:\t\t");
+        outputStrings.push_back("Correctly recognised digits:\t");
+        outputStrings.push_back("\n\nTest Data Digits:\n");
+        // Add some output for ever Digit in the testData
+        for(const auto& t : mnist.testData) {
+            outputStrings.push_back("----------------------------------");
+            // feed the testData
+            feedForward(t.pixelData);
+            // get the Neural Nets results
+            errSum += this->netError;
+            const auto result = getResults();
+            // generate the current test digit as an ASCII picture
+            auto asciiDigit = mnist.MNISTcharToASCII(t);
+            outputStrings.insert(outputStrings.end(), asciiDigit.begin(), asciiDigit.end());
+            // generate the exprected / actual results table
+            outputStrings.push_back("\n");
+            for(int i = 0; i < t.output.size(); i++) {
+                outputStrings.push_back(std::to_string((int)t.output[i]) + "\t\t\t" + std::to_string((float)result[i]));
             }
-        } else {
-            std::cout <<"ERROR: Unable to export Neural Network data" <<std::endl;
+            // generate the networks guess
+            outputStrings.push_back("\n");
+            ulong num = 999, count = 0;
+            std::string tmp = "";
+            // get the Number with the highest possibility ( >= 0.8 )
+            // and check if the other are as low as expected ( <= 0.2 )
+            for(ulong i = 0; i < result.size(); i++) {
+                if(result[i] >= 0.8f) { num = i; }
+                if(result[i] <= 0.2f) { count++; }
+            }
+            tmp += (count >= 9) ? " definitely a: " : " very likely a: ";
+            tmp += "\t" + std::to_string(num);
+            outputStrings.push_back("This is" + tmp);
+            // Check if the estimated digit is correct
+            if(num == t.label) {
+                recognizeCount++;
+                outputStrings.push_back("Network guessed:\tCORRECT");
+            } else {
+                outputStrings.push_back("Network guessed:\tWRONG");
+            }
+            outputStrings.push_back("----------------------------------");
         }
+        // Calculate the overall Error
+        errSum = (errSum / mnist.testData.size());
+        outputStrings[0] += std::to_string(errSum);
+        // Calculate percentage of correctly recognized digits
+        double percent = ((double)recognizeCount / mnist.testData.size()) * 100.0f;
+        outputStrings[1] += (std::to_string((int)percent) + "%  (" + std::to_string(recognizeCount)
+                                    + " / " + std::to_string(mnist.testData.size()) + ")");
+        // WRITE ALL THE TEST OUTPUTS TO A FILE
+        std::fstream file (resultsPath, std::ifstream::out | std::ifstream::binary);
+        if (file.is_open()) { for(const auto& line : outputStrings) { file << line + "\n"; } }
+        file.close();
     }
-    
-    
-    // Get all the Output Layer Neurons Values
-    inline std::vector<double> getResults() { return this->layers.back().getResults(); }
-    
-    
-    // GETTER - SETTER
-    inline double getNetError(void) const { return this->netError; }
-    inline double getRecentAverageError(void) const { return this->recentAverageError; }
+
     
 };
 

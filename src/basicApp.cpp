@@ -32,14 +32,13 @@
 // CLANG / GCC compiler flags: -std=c++14 -Os
 
 #include "NeuralNet.h"
-#include "MNIST.h"
 
 using namespace std;
 using namespace chrono;
 
 
 int main() {
-    
+
     const auto timePoint1 = steady_clock::now();
     
     NeuralNet net = NeuralNet(LAYER_NEURON_TOPOLOGY);
@@ -47,47 +46,14 @@ int main() {
     
     const auto timePoint2 = steady_clock::now();
     
-    // train the neural net
-    for(const auto& t : mnist.trainingData) {
-        net.feedForward(t.pixelData);
-        net.backPropagate(t.output);
-    }
+    net.train(mnist);
     
     const auto timePoint3 = steady_clock::now();
-    
     
     if(DEBUG_OUTPUT) {
         const auto timePoint4 = steady_clock::now();
         
-        double errSum = 0.0f;
-        for(const auto& t : mnist.testData) {
-            net.feedForward(t.pixelData);
-            errSum += net.getNetError();
-        }
-        std::cout <<"Overall Error: " <<(errSum / mnist.testData.size()) <<std::endl;
-        // TEST THE NET WITH THREE RANDOM DIGITS FROM THE MNIST TEST SET
-        std::cout <<"\n\nVisualise result, by testing 3 random digits: " <<std::endl;
-        std::vector<MNISTchar> test {mnist.testData[2347], mnist.testData[6345], mnist.testData[8754]};
-        for(const MNISTchar& in : test) {
-            net.feedForward(in.pixelData);
-            mnist.testPrintout(in);
-            std::cout <<"Expected Values:\tOutput Values:" <<std::endl;
-            const auto result = net.getResults();
-            for(int i = 0; i < in.output.size(); i++) {
-                std::cout <<in.output[i] <<"\t\t\t\t\t";
-                printf("%.5f\n", result[i]);
-            }
-            // GENERATE SOME EASY OUTPUT
-            std::string tmp = "The digit is";
-            ulong num = 100, count = 0;
-            for(ulong i = 0; i < result.size(); i++) {
-                if(result[i] >= 0.9f) { num = i; }
-                if(result[i] <= 0.1f) { count++; }
-            }
-            tmp += (count >= 9) ? " definitely a: " : " very likely a: ";
-            tmp += "\t" + std::to_string(num);
-            std::cout <<tmp <<std::endl;
-        }
+        net.test(mnist, "/Users/peter/Desktop/netTEST.txt");
         
         const auto timePoint5 = steady_clock::now();
         

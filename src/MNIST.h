@@ -112,23 +112,27 @@ private:
     
     
 public:
-    void testPrintout(const MNISTchar& mchar) const {
-        std::cout <<"------------------------------" <<std::endl;
+    // Conver the pixel data (28x28) of an MNISTchar to a vector with
+    // 28 lines of 28 ASCII characters in string format (+ add one line with the label)
+    std::vector<std::string> MNISTcharToASCII(const MNISTchar& mchar) {
+        std::vector<std::string> tmpStrings = std::vector<std::string>();
         int count = 0;
+        std::string line = "";
         for (const double& r : mchar.pixelData) {
             if(count < 27) {
-                if(r < 0.25) std::cout <<" ";
-                else if(r < 0.5) std::cout <<"-";
-                else if(r < 0.75) std::cout <<"+";
-                else if(r <= 1.0) std::cout <<"#";
+                if(r < 0.25) line += " ";
+                else if(r < 0.5) line += "-";
+                else if(r < 0.75) line += "+";
+                else if(r <= 1.0) line += "#";
                 ++count;
             } else {
-                std::cout <<std::endl;
+                tmpStrings.push_back(line);
+                line = "";
                 count = 0;
             }
         }
-        std::cout <<"\t\tThis is a: " <<mchar.label  <<std::endl;
-        std::cout <<"------------------------------" <<std::endl;
+        tmpStrings.push_back("\tThis is a: " + std::to_string(mchar.label));
+        return tmpStrings;
     }
     
     
