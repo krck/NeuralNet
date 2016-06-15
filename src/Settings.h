@@ -50,13 +50,14 @@
 #define TRAINING_ITER               1                           // Traingin iterations with the input data
 #define ETA                         0.2                         // Net learning rate (0.0 = slow / 1.0 = fast) (influences the deltas)
 #define ALPHA                       0.8                         // Momentum (Multiplier of the delta weights) optimal range: 0.0 - 1.0
-#define RAND_0to1                   (rand()/(double)RAND_MAX)   // Generate Random Number between 0.0f and 1.0f
 #define SMOOTHING_FACTOR            100                         // Number of training samples to average over
 #define DEBUG_OUTPUT                true                        // Display some Debug output
 
 // BIG-Endian to LITTLE-Endian byte swap
 #define swap16(n) (((n&0xFF00)>>8)|((n&0x00FF)<<8))
 #define swap32(n) ((swap16((n&0xFFFF0000)>>16))|((swap16(n&0x0000FFFF))<<16))
+// Generate Random Number between 0.0f and 1.0f
+#define RAND_0to1                   (rand()/(double)RAND_MAX)
 
 typedef unsigned long               ulong;
 typedef unsigned char               byte;

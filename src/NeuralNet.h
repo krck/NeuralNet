@@ -66,10 +66,6 @@ public:
             }
         }
     }
-    
-    
-    // Get all the Output Layer Neurons Values
-    inline std::vector<double> getResults() { return this->layers.back().getResults(); }
 
     
 private:
@@ -127,7 +123,7 @@ public:
             feedForward(t.pixelData);
             // get the Neural Nets results
             errSum += this->netError;
-            const auto result = getResults();
+            const auto result = this->layers.back().getResults();
             // generate the current test digit as an ASCII picture
             auto asciiDigit = mnist.MNISTcharToASCII(t);
             outputStrings.insert(outputStrings.end(), asciiDigit.begin(), asciiDigit.end());
