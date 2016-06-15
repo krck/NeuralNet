@@ -37,6 +37,7 @@
 #include "MNIST.h"
 #include "Layer.h"
 
+
 class NeuralNet {
 private:
     double netError;
@@ -47,17 +48,20 @@ public:
     NeuralNet(const Topology& topology) : netError(0.0), recentAverageError(0.0) {
         // Network needs at least 2 Layers (1 Input & 1 Output)
         if(topology.size() >= 2) {
-            // Create every Layer in the Net
+            // Create every Layer in the Net (1 Input, X Hidden, 1 Output)
             this->layers.push_back(Layer(topology[0], topology[1], LayerType::Input));
             for(ulong i = 1; i < topology.size() - 1; i++) {
                 this->layers.push_back(Layer(topology[i], topology[i + 1], LayerType::Hidden));
             }
             this->layers.push_back(Layer(topology.back(), 0, LayerType::Output));
-        } else { std::cout <<"ERROR: Trying to create a Network wiht less than 2 Layers" <<std::endl; }
+        } else {
+            std::cout <<"ERROR: Trying to create a Network wiht less than 2 Layers" <<std::endl;
+        }
     }
     
     
-    // Feed forward all the input data and backpropagate with the according output data
+    // Train the NeuralNet by feeding forward all the input data
+    // and then backpropagating with the according output data
     void train(const MNIST& mnist) {
         for(int i = 0; i < TRAINING_ITER; i++) {
             for(const auto& t : mnist.trainingData) {
@@ -72,9 +76,7 @@ private:
     void feedForward(const std::vector<double>& inputValues) {
         // Pass the input values to the input Layer
         this->layers.front().setInputValues(inputValues);
-        // Forward Propagate:
-        // Loop throug each Layer (and each Neuron of the Layer) and "feedForward"
-        // (Start at 1 because the Input-Layer values are assigned already)
+        // Loop throug each (hidden and output) Layer to call "feedForward"
         for(ulong i = 1; i < this->layers.size(); i++) {
             this->layers[i].feedForward(this->layers[i-1]);
         }
@@ -83,12 +85,10 @@ private:
     
     void backPropagate(const std::vector<double>& expOutputs) {
         // Get the overall net error and calculate the recent average measurement
-        // This value going to be minimized throug the back propagation (hopefully ...)
         this->netError = this->layers.back().getError(expOutputs);
         this->recentAverageError = (recentAverageError * SMOOTHING_FACTOR + netError) / (SMOOTHING_FACTOR + 1.0);
-        // Gradients
-        // (While Training the Net: The gradient pushes Neuron outputs in
-        //  the direction that will reduce the overall error value)
+        // Gradients: While training the net, gradients will push the Neuron outputs
+        // in a direction that will reduce the overall error value
         // Calculate output layer gradients
         this->layers.back().calculateGradients(expOutputs);
         // Calcualte hidden layer gradients
@@ -97,7 +97,7 @@ private:
             this->layers[i].calculateGradients(this->layers[i+1]);
         }
         // Update the connection weights
-        // (Loop from the output Layer backwards to the first hidden layer / Input Layer has no weights coming in)
+        // (Loop from the output Layer backwards to the first hidden layer / Input Layer has no in coming weights)
         for (ulong i = (layers.size() - 1); i > 0; i--) { this->layers[i].updateWeights(this->layers[i-1]); }
     }
     
@@ -119,7 +119,7 @@ public:
         // Add some output for ever Digit in the testData
         for(const auto& t : mnist.testData) {
             outputStrings.push_back("----------------------------------");
-            // feed the testData
+            // feed forward the testData
             feedForward(t.pixelData);
             // get the Neural Nets results
             errSum += this->netError;

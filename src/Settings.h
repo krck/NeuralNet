@@ -54,8 +54,8 @@
 #define DEBUG_OUTPUT                true                        // Display some Debug output
 
 // BIG-Endian to LITTLE-Endian byte swap
-#define swap16(n) (((n&0xFF00)>>8)|((n&0x00FF)<<8))
-#define swap32(n) ((swap16((n&0xFFFF0000)>>16))|((swap16(n&0x0000FFFF))<<16))
+#define swap16(n)                   (((n&0xFF00)>>8)|((n&0x00FF)<<8))
+#define swap32(n)                   ((swap16((n&0xFFFF0000)>>16))|((swap16(n&0x0000FFFF))<<16))
 // Generate Random Number between 0.0f and 1.0f
 #define RAND_0to1                   (rand()/(double)RAND_MAX)
 

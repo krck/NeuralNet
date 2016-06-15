@@ -73,7 +73,7 @@ public:
             double sum = 0.0f;
             // Sum up all Outputs from the previous Layer (with the Bias Neuron)
             for(const Neuron& n : prev.getNeurons()) { sum += (n.outputValue * n.outputWeights[index].weight); }
-            // Apply activation / transfer Function to shape the output value
+            // Apply the sigmoid function to shape the output value (curve between 0.0 and 1.0)
             this->neurons[i].outputValue = sigmoidFunction(sum);
         }
     }
@@ -92,7 +92,6 @@ public:
     
     
     // Calculate the new Gradients of the Hidden-Layer Neurons
-    // (Basically the same as OutputGradient but no expected Outputs are needed)
     void calculateGradients(const Layer& next) {
         if(this->type == LayerType::Hidden) {
             for(ulong i = 0; i < this->getNeuronCount(); i++) {
@@ -109,15 +108,14 @@ public:
     
     
     void updateWeights(Layer& prev) {
-        // The weights to be updated are in the Connection container
-        // in the neurons of the previous Layer
-        // (Update all weights, including Bias)
+        // All the "incoming" weights are stored in the Connection vector
+        // of the Neurons in the previous layer (fully connected)
         for (ulong n = 0; n < this->getNeuronCountNoBias(); n++) {
             for (ulong j = 0; j < prev.getNeuronCount(); j++) {
                 Neuron& prevNeuron = prev.getNeuron(j);
                 const double oldDeltaWeight = prevNeuron.outputWeights[this->neurons[n].index].deltaWeight;
-                // Individual input, magnified by the gradient and the learning rate (ETA n),
-                // and also add momentum (alpha): a fraction of the previous delta weight
+                // Individual input, magnified by the gradient and the learning rate (ETA),
+                // and also add momentum (ALPHA): a fraction of the previous delta weight
                 const double newDeltaWeight = (ETA * prevNeuron.outputValue * this->neurons[n].gradient) + (ALPHA * oldDeltaWeight);
                 prevNeuron.outputWeights[this->neurons[n].index].deltaWeight = newDeltaWeight;
                 prevNeuron.outputWeights[this->neurons[n].index].weight += newDeltaWeight;
@@ -132,7 +130,6 @@ public:
         double tmperror = 0.0f;
         if(this->type == LayerType::Output) {
             if(expOutputs.size() == this->getNeuronCountNoBias()) {
-                // RMS (Root Mean Square Error) of all output neuron errors
                 // Add up all the deltas between actual outputs and expected outputs (- 1 Bias)
                 for(ulong i = 0; i < this->getNeuronCountNoBias(); i++) {
                     const double delta = expOutputs[i] - this->neurons[i].outputValue;
@@ -141,7 +138,7 @@ public:
                 }
                 // Get the average (squared) error delta
                 tmperror /= this->getNeuronCountNoBias();
-                // Take the square root, to get the RMS
+                // Take the square root, to get the RMS (Root Mean Square Error)
                 tmperror = sqrt(tmperror);
             } else { std::cout <<"ERROR: Ammount of OutputValues not equal to Expected OutputValues" <<std::endl; }
         } else { std::cout <<"ERROR: Trying to get Results from a non Output-Layer" <<std::endl; }
@@ -149,11 +146,10 @@ public:
     }
     
     
-    // Get all the Output-Layer Neuron Values
     std::vector<double> getResults() const {
         std::vector<double> tmpres;
         if(this->type == LayerType::Output) {
-            // Sum up all the Outputs from the Layer (- Bias)
+            // Get all the neuron outputs from the output layer (- Bias)
             for(ulong i = 0; i < this->getNeuronCountNoBias(); i++) {
                 tmpres.push_back(this->neurons[i].outputValue);
             }
