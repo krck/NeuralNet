@@ -29,24 +29,24 @@ efforts on preprocessing and formatting. <br>
 
 <b> Project source: </b>
 
-basicApp.cpp: 
-- "main" function, calling "train" and "test"
-Settings.h:
-- Set the path to the MNIST files
-- Set the neural network topology (Layers / Neurons)
-- Set training iterations and training speed (ETA / ALPHA)
-NeuralNet.h:
-- Calling feed forward, with the training data, for each layer in the net
-- Backpropagate to get the networks error and call the gradient calculation for each layer
-- Calling feed forward, with the testing data, to create an test-results output file
-Layer.h:
-- Passing the input values to the input layer neurons
-- Forward propagating the input values throug each neuron (calculating the sigmoid curve)
-- Calculating the gradients and weights of each neuron, when backpropagating
-- Returning the output values of the output layer neurons
-- Returning the overall network error based on the output layer neurons
-Neuron.h:
-- Neuron struct holding its output value and gradient
-- Neuron struct holding all the weights for each connected neuron in the next layer
-MNIST.h
-- Parsing MNIST files to structs that hold the pixel values, labels and expected outputs
+1. basicApp.cpp: 
+    * "main" function, calling "train" and "test"
+2. Settings.h:
+    * Set the path to the MNIST files
+    * Set the neural network topology (Layers / Neurons)
+    * Set training iterations and training speed (ETA / ALPHA)
+3. NeuralNet.h:
+    * Calling feed forward, with the training data, for each layer in the net
+    * Backpropagate to get the networks error and call the gradient calculation for each layer
+    * Calling feed forward, with the testing data, to create an test-results output file
+4. Layer.h:
+    * Passing the input values to the input layer neurons
+    * Forward propagating the input values throug each neuron (calculating the sigmoid curve)
+    * Calculating the gradients and weights of each neuron, when backpropagating
+    * Returning the output values of the output layer neurons
+    * Returning the overall network error based on the output layer neurons
+5. Neuron.h:
+    * Neuron struct holding its output value and gradient
+    * Neuron struct holding all the weights for each connected neuron in the next layer
+6. MNIST.h
+    * Parsing MNIST files to structs that hold the pixel values, labels and expected outputs
