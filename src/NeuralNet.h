@@ -64,9 +64,9 @@ public:
     // and then backpropagating with the according output data
     void train(const MNIST& mnist) {
         for(int i = 0; i < TRAINING_ITER; i++) {
-            for(const auto& t : mnist.trainingData) {
-                feedForward(t.pixelData);
-                backPropagate(t.output);
+            for(const MNISTchar& mc : mnist.trainingData) {
+                feedForward(mc.pixelData);
+                backPropagate(mc.output);
             }
         }
     }
@@ -77,9 +77,7 @@ private:
         // Pass the input values to the input Layer
         this->layers.front().setInputValues(inputValues);
         // Loop throug each (hidden and output) Layer to call "feedForward"
-        for(ulong i = 1; i < this->layers.size(); i++) {
-            this->layers[i].feedForward(this->layers[i-1]);
-        }
+        for(ulong i = 1; i < this->layers.size(); i++) { this->layers[i].feedForward(this->layers[i-1]); }
     }
     
     
@@ -93,9 +91,7 @@ private:
         this->layers.back().calculateGradients(expOutputs);
         // Calcualte hidden layer gradients
         // (Loop backwards from the penultimate Layer to the second layer ... through all hidden Layers)
-        for (ulong i = (this->layers.size() - 2); i > 0; i--) {
-            this->layers[i].calculateGradients(this->layers[i+1]);
-        }
+        for (ulong i = (this->layers.size() - 2); i > 0; i--) { this->layers[i].calculateGradients(this->layers[i+1]); }
         // Update the connection weights
         // (Loop from the output Layer backwards to the first hidden layer / Input Layer has no in coming weights)
         for (ulong i = (layers.size() - 1); i > 0; i--) { this->layers[i].updateWeights(this->layers[i-1]); }
@@ -103,7 +99,7 @@ private:
     
     
 public:
-    void exportNeuralNet(const std::string& exportPath) { }
+    void exportNeuralNet(const std::string& exportPath) const { }
     void importNeuralNet(const std::string& importPath) { }
     
     

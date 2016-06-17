@@ -47,7 +47,6 @@ private:
     
 public:
     Layer(ulong nCount, ulong nCountNext, LayerType ltype) : type(ltype) {
-        // Add all the Neurons to the Layer
         for(ulong i = 0; i < nCount; i++) { neurons.push_back(Neuron(nCountNext, i)); }
         // Add one Bias Neuron to the Layer and set the output value to 1.0
         neurons.push_back(Neuron(nCountNext, neurons.size()));
@@ -107,25 +106,24 @@ public:
     }
     
     
-    void updateWeights(Layer& prev) {
-        // All the "incoming" weights are stored in the Connection vector
-        // of the Neurons in the previous layer (fully connected)
+    void updateWeights(Layer& prev) const {
         for (ulong n = 0; n < this->getNeuronCountNoBias(); n++) {
-            for (ulong j = 0; j < prev.getNeuronCount(); j++) {
-                Neuron& prevNeuron = prev.getNeuron(j);
-                const double oldDeltaWeight = prevNeuron.outputWeights[this->neurons[n].index].deltaWeight;
-                // Individual input, magnified by the gradient and the learning rate (ETA),
-                // and also add momentum (ALPHA): a fraction of the previous delta weight
-                const double newDeltaWeight = (ETA * prevNeuron.outputValue * this->neurons[n].gradient) + (ALPHA * oldDeltaWeight);
-                prevNeuron.outputWeights[this->neurons[n].index].deltaWeight = newDeltaWeight;
-                prevNeuron.outputWeights[this->neurons[n].index].weight += newDeltaWeight;
+            const auto tmpInd = this->neurons[n].index;
+            // Loop throug all the neruons in the previous layer, because each
+            // has a weighted connection to the current neuron that needs to be updated
+            for (Neuron& prevNeuron : prev.getNeurons()) {
+                const auto oldDeltaWeight = prevNeuron.outputWeights[tmpInd].deltaWeight;
+                // The new weight is magnified by the gradient, the learning rate (ETA),
+                // and also the added momentum (ALPHA): a fraction of the previous delta weight
+                const auto newDeltaWeight = (ETA * prevNeuron.outputValue * this->neurons[n].gradient) + (ALPHA * oldDeltaWeight);
+                prevNeuron.outputWeights[tmpInd].deltaWeight = newDeltaWeight;
+                prevNeuron.outputWeights[tmpInd].weight += newDeltaWeight;
             }
         }
-        
     }
     
     
-    // Calculate the overall Output Layer error
+    // Calculate the overall Output Layer error (RMS)
     double getError(const std::vector<double>& expOutputs) const {
         double tmperror = 0.0f;
         if(this->type == LayerType::Output) {
@@ -146,13 +144,12 @@ public:
     }
     
     
+    // Get all the neuron outputs from the output layer (- Bias)
     std::vector<double> getResults() const {
         std::vector<double> tmpres;
         if(this->type == LayerType::Output) {
-            // Get all the neuron outputs from the output layer (- Bias)
-            for(ulong i = 0; i < this->getNeuronCountNoBias(); i++) {
-                tmpres.push_back(this->neurons[i].outputValue);
-            }
+            for(const Neuron& n : this->neurons) { tmpres.push_back(n.outputValue); }
+            tmpres.pop_back();
         } else { std::cout <<"ERROR: Trying to get Results from a non Output-Layer" <<std::endl; }
         return tmpres;
     }
@@ -161,9 +158,9 @@ public:
     // GETTER - SETTER
     inline size_t getNeuronCount() const { return  this->neurons.size(); }
     inline size_t getNeuronCountNoBias() const { return  (this->neurons.size() - 1); }
-    inline const std::vector<Neuron> & getNeurons() const { return this->neurons; }
+    inline const std::vector<Neuron>& getNeurons() const { return this->neurons; }
+    inline std::vector<Neuron>& getNeurons() { return this->neurons; }
     inline const Neuron& getNeuron(ulong index) const { return this->neurons[index]; }
-    inline Neuron& getNeuron(ulong index) { return this->neurons[index]; }
     
 private:
     // The Sigmoid Function (having an S shaped curve) produces a output value between 0.0 and 1.0

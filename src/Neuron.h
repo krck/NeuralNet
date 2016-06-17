@@ -40,6 +40,7 @@
 struct Connection {
     double weight;
     double deltaWeight;
+    
     Connection() : weight(RAND_0to1), deltaWeight(0.0f) { }
 };
 
@@ -50,10 +51,8 @@ struct Neuron {
     double gradient;                            // used by the backpropagation
     std::vector<Connection> outputWeights;      // Output weight values for all connected Neurons in the next Layer
     
-    Neuron(ulong numOutputs, ulong ind) : index(ind), outputValue(0.0f), gradient(0.0f) {
-        // Fully connected Net: One Connection for each Neuron in the next Layer
-        this->outputWeights = std::vector<Connection>(numOutputs);
-    }
+    // Fully connected Net: One Connection for each Neuron in the next Layer
+    Neuron(ulong outputs, ulong ind) : index(ind), outputValue(0.0f), gradient(0.0f), outputWeights(outputs) { }
 };
 
 #endif

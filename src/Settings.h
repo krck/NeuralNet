@@ -44,11 +44,11 @@
 
 #define PATH                        "/Users/peter/Documents/github/C++/NeuralNet_MNIST/MNIST_DATA/"
 
-//  784N Input Layer / 1x 100N Hidden Layer / 10N Output Layer
+//  784N Input Layer / 1x 120N Hidden Layer / 10N Output Layer
 //  (Actual Net: Every Layer has one additional Bias Neuron)
-#define LAYER_NEURON_TOPOLOGY       {784, 100, 10}
+#define LAYER_NEURON_TOPOLOGY       {784, 120, 10}
 #define TRAINING_ITER               1                           // Traingin iterations with the input data
-#define ETA                         0.2                         // Net learning rate (0.0 = slow / 1.0 = fast) (influences the deltas)
+#define ETA                         0.1                         // Net learning rate (0.0 = slow / 1.0 = fast) (influences the deltas)
 #define ALPHA                       0.8                         // Momentum (Multiplier of the delta weights) optimal range: 0.0 - 1.0
 #define SMOOTHING_FACTOR            100                         // Number of training samples to average over
 #define DEBUG_OUTPUT                true                        // Display some Debug output

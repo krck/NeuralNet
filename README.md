@@ -22,6 +22,8 @@ efforts on preprocessing and formatting. <br>
 - [x] Fix the neural net
 - [x] Add test Function and test Export
 - [ ] Add Network Export & Import
+- [ ] Add batch learning (choose between batch and stochastic approach)
+- [ ] Add multi-threading
 - [x] Enable multiple training iterations
 - [x] Cleaned up main() Function
 - [ ] Further cleanup and optimization
