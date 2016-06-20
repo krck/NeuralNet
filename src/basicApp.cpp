@@ -29,7 +29,8 @@
  *                                                                                   *
  *************************************************************************************/
 
-// CLANG / GCC compiler flags: -std=c++14 -Os
+// CLANG / GCC compiler flags:		-std=c++14 -Os
+// Visual C++ compiler flags:		/Ox
 
 #include "NeuralNet.h"
 
@@ -42,7 +43,7 @@ int main() {
     const auto timePoint1 = steady_clock::now();
     
     NeuralNet net = NeuralNet(LAYER_NEURON_TOPOLOGY);
-    MNIST mnist = MNIST(PATH);
+	MNIST mnist = MNIST(PATH_IN);
     
     const auto timePoint2 = steady_clock::now();
     
@@ -53,7 +54,7 @@ int main() {
     if(DEBUG_OUTPUT) {
         const auto timePoint4 = steady_clock::now();
         
-        net.test(mnist, "/Users/peter/Desktop/netTEST.txt");
+        net.test(mnist, PATH_OUT);
         
         const auto timePoint5 = steady_clock::now();
         
@@ -62,6 +63,9 @@ int main() {
         cout << "NeuralNet testing time:\t\t" <<duration_cast<milliseconds>(timePoint5 - timePoint4).count() <<" ms" <<endl;
         cout << "Total:\t\t\t\t\t\t" <<duration_cast<seconds>(timePoint5 - timePoint1).count() <<" sec\n" <<endl;
     }
-    
+
+	// keep the Windows Console on screen
+	if (WINDOWS) { system("pause"); }
+
     return 0;
 }

@@ -1,0 +1,17 @@
+﻿Der Buildvorgang wurde am 20.06.2016 13:56:51 gestartet.
+     1>Projekt "C:\Users\e11\Downloads\NeuralNet-master\projects\NeuralNet_MNIST_WIN\NeuralNet_MNIST\NeuralNet_MNIST.vcxproj" auf Knoten "2", Build Ziel(e).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /nologo /W3 /WX- /sdl /Ox /Oy- /GL /D _MBCS /Gm- /EHsc /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt ..\..\..\src\basicApp.cpp
+         basicApp.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\e11\Downloads\NeuralNet-master\projects\NeuralNet_MNIST_WIN\Debug\NeuralNet_MNIST.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\e11\Downloads\NeuralNet-master\projects\NeuralNet_MNIST_WIN\Debug\NeuralNet_MNIST.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\e11\Downloads\NeuralNet-master\projects\NeuralNet_MNIST_WIN\Debug\NeuralNet_MNIST.lib" /MACHINE:X86 Debug\basicApp.obj
+         basicApp.obj : Es wurde ein mit /GL kompiliertes MSIL .netmodule oder module gefunden. Verknüpfung wird mit /LTCG erneut gestartet. Fügen Sie /LTCG zur Linkbefehlszeile hinzu, um die Linkerleistung zu erhöhen.
+     1>LINK : warning LNK4075: /INCREMENTAL wird aufgrund der Angabe von /LTCG ignoriert.
+         Code wird generiert.
+         Codegenerierung ist abgeschlossen.
+         NeuralNet_MNIST.vcxproj -> C:\Users\e11\Downloads\NeuralNet-master\projects\NeuralNet_MNIST_WIN\Debug\NeuralNet_MNIST.exe
+     1>Die Erstellung des Projekts "C:\Users\e11\Downloads\NeuralNet-master\projects\NeuralNet_MNIST_WIN\NeuralNet_MNIST\NeuralNet_MNIST.vcxproj" ist abgeschlossen, Build Ziel(e).
+
+Build erfolgreich.
+
+Verstrichene Zeit 00:00:01.57

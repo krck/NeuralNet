@@ -125,7 +125,7 @@ public:
             outputStrings.insert(outputStrings.end(), asciiDigit.begin(), asciiDigit.end());
             // generate the exprected / actual results table
             outputStrings.push_back("\n");
-            for(int i = 0; i < t.output.size(); i++) {
+            for(ulong i = 0; i < t.output.size(); i++) {
                 outputStrings.push_back(std::to_string((int)t.output[i]) + "\t\t\t" + std::to_string((float)result[i]));
             }
             // generate the networks guess

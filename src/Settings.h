@@ -42,7 +42,22 @@
 
 #include <math.h>
 
-#define PATH                        "/Users/peter/Documents/github/C++/NeuralNet_MNIST/MNIST_DATA/"
+
+// Windows (includes 32-Bit and 64-Bit Versions)
+#ifdef _WIN32
+	#define WINDOWS					true
+	#define UNIX					false
+	#define PATH_IN					"C:\\Users\\e11\\Downloads\\NeuralNet-master\\MNIST_DATA\\"
+	#define PATH_OUT				"C:\\Users\\e11\\Downloads\\netTEST.txt"
+// Unix like Systems (__Apple__ includes Mac OS X and iOS)
+// (Does not include ALL(!) the BSD and Linux distributions)
+#elif __APPLE__ || __FreeBSD__ || __linux__
+	#define WINDOWS					false
+	#define UNIX					true
+	#define PATH_IN					"/Users/peter/Documents/github/C++/NeuralNet_MNIST/MNIST_DATA/"
+	#define PATH_OUT				"/Users/peter/Desktop/netTEST.txt"
+#endif
+
 
 //  784N Input Layer / 1x 120N Hidden Layer / 10N Output Layer
 //  (Actual Net: Every Layer has one additional Bias Neuron)

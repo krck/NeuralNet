@@ -22,11 +22,12 @@ efforts on preprocessing and formatting. <br>
 - [x] Fix the neural net
 - [x] Add test Function and test Export
 - [ ] Add Network Export & Import
-- [ ] Add batch learning (choose between batch and stochastic approach)
-- [ ] Add multi-threading
+- [ ] Add batch learning class (batch and stochastic / on-line approach)
+- [ ] Add multi-threading (benchmark mutex-locks and atomics)
 - [x] Enable multiple training iterations
 - [x] Cleaned up main() Function
 - [ ] Further cleanup and optimization
+- [ ] Get precision to at least 95% (currently 76%)
 
 
 <b> Project source: </b>
