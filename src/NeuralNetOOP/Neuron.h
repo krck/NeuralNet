@@ -1,4 +1,4 @@
-//  basicApp.cpp
+//  Neuron.h
 /*************************************************************************************
  *  Neural Network to process handwritten digits form the MNIST dataset              *
  *-----------------------------------------------------------------------------------*
@@ -29,43 +29,26 @@
  *                                                                                   *
  *************************************************************************************/
 
-// CLANG / GCC compiler flags:		-std=c++14 -Os
-// Visual C++ compiler flags:		/Ox
+#pragma once
 
-#include "NeuralNet.h"
+#include "../NetBase.h"
 
-using namespace std;
-using namespace chrono;
-
-
-int main() {
-
-    const auto timePoint1 = steady_clock::now();
+// Weight and DeltaWeight for each connection of the
+// Neuron, to the Neurons in the next Layer
+struct Connection {
+    float weight;
+    float deltaWeight;
     
-    NeuralNet net = NeuralNet(LAYER_NEURON_TOPOLOGY);
-	MNIST mnist = MNIST(PATH_IN);
-    
-    const auto timePoint2 = steady_clock::now();
-    
-    net.train(mnist);
-    
-    const auto timePoint3 = steady_clock::now();
-    
-    if(DEBUG_OUTPUT) {
-        const auto timePoint4 = steady_clock::now();
-        
-        net.test(mnist, PATH_OUT);
-        
-        const auto timePoint5 = steady_clock::now();
-        
-        cout << "\n\nMNIST parsing time:\t\t\t" <<duration_cast<milliseconds>(timePoint2 - timePoint1).count() <<" ms" <<endl;
-        cout << "NeuralNet training time:\t" <<duration_cast<milliseconds>(timePoint3 - timePoint2).count() <<" ms" <<endl;
-        cout << "NeuralNet testing time:\t\t" <<duration_cast<milliseconds>(timePoint5 - timePoint4).count() <<" ms" <<endl;
-        cout << "Total:\t\t\t\t\t\t" <<duration_cast<seconds>(timePoint5 - timePoint1).count() <<" sec\n" <<endl;
-    }
+    Connection() : weight(random_0_1), deltaWeight(0.0f) { }
+};
 
-	// keep the Windows Console on screen
-	if (WINDOWS) { system("pause"); }
-
-    return 0;
-}
+// Simple Sigmoid Neuron
+struct Neuron {
+    const ulong index;                          // Index of the Neuron in it's Layer
+    float outputValue;                         // Value of the Neuron given to all Neurons in the next Layer
+    float gradient;                            // used by the backpropagation
+    std::vector<Connection> outputWeights;      // Output weight values for all connected Neurons in the next Layer
+    
+    // Fully connected Net: One Connection for each Neuron in the next Layer
+    Neuron(ulong outputs, ulong ind) : index(ind), outputValue(0.0f), gradient(0.0f), outputWeights(outputs) { }
+};

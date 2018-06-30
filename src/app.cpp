@@ -1,4 +1,4 @@
-//  Neuron.h
+//  basicApp.cpp
 /*************************************************************************************
  *  Neural Network to process handwritten digits form the MNIST dataset              *
  *-----------------------------------------------------------------------------------*
@@ -29,30 +29,52 @@
  *                                                                                   *
  *************************************************************************************/
 
-#pragma once
-#ifndef Neuron_h
-#define Neuron_h
+// CLANG / GCC compiler flags:		-std=c++14 -Os
+// Visual C++ compiler flags:		/Ox
 
-#include "Settings.h"
+#include "NeuralNetOOP/NeuralNetOOP.h"
+#include "NeuralNetVec/NeuralNetVec.h"
 
-// Weight and DeltaWeight for each connection of the
-// Neuron, to the Neurons in the next Layer
-struct Connection {
-    double weight;
-    double deltaWeight;
+using namespace std;
+using namespace chrono;
+
+int main() {
+    // Net Interface OOP/VEC
     
-    Connection() : weight(RAND_0to1), deltaWeight(0.0f) { }
-};
-
-// Simple Sigmoid Neuron
-struct Neuron {
-    const ulong index;                          // Index of the Neuron in it's Layer
-    double outputValue;                         // Value of the Neuron given to all Neurons in the next Layer
-    double gradient;                            // used by the backpropagation
-    std::vector<Connection> outputWeights;      // Output weight values for all connected Neurons in the next Layer
+    auto netOOP = NeuralNetOOP(LAYER_NEURON_TOPOLOGY);
+    auto netVec = NeuralNetVec(LAYER_NEURON_TOPOLOGY, ETA);
+	
+    // Get the MNIST data
+    MNIST mnist = MNIST(PATH_IN);
+    std::vector<Vector> mnistInput (mnist.trainingData.size());
+    std::vector<Vector> mnistOutput (mnist.trainingData.size());
+    std::vector<Vector> mnistInput_test (mnist.testData.size());
+    std::vector<Vector> mnistOutput_test (mnist.testData.size());
+    for(ulong i = 0; i < mnist.trainingData.size(); i++) {
+        mnistInput[i] = mnist.trainingData[i].pixelData;
+        mnistOutput[i] = mnist.trainingData[i].output;
+    }
+    for(ulong i = 0; i < mnist.testData.size(); i++) {
+        mnistInput_test[i] = mnist.testData[i].pixelData;
+        mnistOutput_test[i] = mnist.testData[i].output;
+    }
     
-    // Fully connected Net: One Connection for each Neuron in the next Layer
-    Neuron(ulong outputs, ulong ind) : index(ind), outputValue(0.0f), gradient(0.0f), outputWeights(outputs) { }
-};
+    const auto t1 = steady_clock::now();
+    netOOP.train(mnist);
+    const auto t2 = steady_clock::now();
+    
+    const auto t3 = steady_clock::now();
+    netVec.Train(TRAINING_ITER, mnistInput, mnistOutput);
+    const auto t4 = steady_clock::now();
+    
+    netOOP.test(mnist, std::string(PATH_OUT) + "OOP.txt");
+    netVec.test(mnist, std::string(PATH_OUT) + "VEC.txt");
+    
+    cout << "NeuralNet OOP training time:\t" <<duration_cast<seconds>(t2 - t1).count() <<" sec." <<endl;
+    cout << "NeuralNet VEC training time:\t" <<duration_cast<seconds>(t4 - t3).count() <<" sec." <<endl;
 
-#endif
+	// keep the Windows Console on screen
+	if (WINDOWS) { system("pause"); }
+
+    return 0;
+}

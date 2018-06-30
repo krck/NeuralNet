@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D000548C1D08483200E50F16 /* basicApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D00054871D08483200E50F16 /* basicApp.cpp */; };
+		D000548C1D08483200E50F16 /* app.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D00054871D08483200E50F16 /* app.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,17 +24,20 @@
 
 /* Begin PBXFileReference section */
 		D000547C1D08480D00E50F16 /* NeuralNet_MNIST */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = NeuralNet_MNIST; sourceTree = BUILT_PRODUCTS_DIR; };
-		D00054871D08483200E50F16 /* basicApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = basicApp.cpp; sourceTree = "<group>"; };
+		D00054871D08483200E50F16 /* app.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = app.cpp; sourceTree = "<group>"; };
 		D00054881D08483200E50F16 /* MNIST.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MNIST.h; sourceTree = "<group>"; };
-		D00054891D08483200E50F16 /* NeuralNet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NeuralNet.h; sourceTree = "<group>"; };
-		D000548A1D08483200E50F16 /* Neuron.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Neuron.h; sourceTree = "<group>"; };
 		D000548B1D08483200E50F16 /* Settings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Settings.h; sourceTree = "<group>"; };
 		D000548D1D0849BF00E50F16 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		D007158E1D0FE77E0074F616 /* t10k-images.idx3-ubyte */ = {isa = PBXFileReference; lastKnownFileType = file; path = "t10k-images.idx3-ubyte"; sourceTree = "<group>"; };
 		D007158F1D0FE77E0074F616 /* t10k-labels.idx1-ubyte */ = {isa = PBXFileReference; lastKnownFileType = file; path = "t10k-labels.idx1-ubyte"; sourceTree = "<group>"; };
 		D00715901D0FE77E0074F616 /* train-images.idx3-ubyte */ = {isa = PBXFileReference; lastKnownFileType = file; path = "train-images.idx3-ubyte"; sourceTree = "<group>"; };
 		D00715911D0FE77E0074F616 /* train-labels.idx1-ubyte */ = {isa = PBXFileReference; lastKnownFileType = file; path = "train-labels.idx1-ubyte"; sourceTree = "<group>"; };
-		D00715921D0FEA180074F616 /* Layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Layer.h; sourceTree = "<group>"; };
+		D0C725A820E7688300A520C0 /* Neuron.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Neuron.h; sourceTree = "<group>"; };
+		D0C725A920E7688300A520C0 /* Layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Layer.h; sourceTree = "<group>"; };
+		D0C725AA20E7688300A520C0 /* NeuralNetOOP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NeuralNetOOP.h; sourceTree = "<group>"; };
+		D0C725AD20E7AC5600A520C0 /* NetMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetMath.h; sourceTree = "<group>"; };
+		D0C725AE20E7AD2600A520C0 /* NeuralNetVec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NeuralNetVec.h; sourceTree = "<group>"; };
+		D0C725AF20E7AFFA00A520C0 /* NetBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetBase.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,11 +72,11 @@
 		D00054861D08483200E50F16 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				D00054871D08483200E50F16 /* basicApp.cpp */,
+				D0C725AB20E7ABF600A520C0 /* NeuralNetVec */,
+				D0C725A720E7688300A520C0 /* NeuralNetOOP */,
+				D00054871D08483200E50F16 /* app.cpp */,
+				D0C725AF20E7AFFA00A520C0 /* NetBase.h */,
 				D000548B1D08483200E50F16 /* Settings.h */,
-				D00054891D08483200E50F16 /* NeuralNet.h */,
-				D00715921D0FEA180074F616 /* Layer.h */,
-				D000548A1D08483200E50F16 /* Neuron.h */,
 				D00054881D08483200E50F16 /* MNIST.h */,
 			);
 			name = src;
@@ -90,6 +93,25 @@
 			);
 			name = MNIST_DATA;
 			path = ../MNIST_DATA;
+			sourceTree = "<group>";
+		};
+		D0C725A720E7688300A520C0 /* NeuralNetOOP */ = {
+			isa = PBXGroup;
+			children = (
+				D0C725A820E7688300A520C0 /* Neuron.h */,
+				D0C725A920E7688300A520C0 /* Layer.h */,
+				D0C725AA20E7688300A520C0 /* NeuralNetOOP.h */,
+			);
+			path = NeuralNetOOP;
+			sourceTree = "<group>";
+		};
+		D0C725AB20E7ABF600A520C0 /* NeuralNetVec */ = {
+			isa = PBXGroup;
+			children = (
+				D0C725AD20E7AC5600A520C0 /* NetMath.h */,
+				D0C725AE20E7AD2600A520C0 /* NeuralNetVec.h */,
+			);
+			path = NeuralNetVec;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -148,7 +170,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D000548C1D08483200E50F16 /* basicApp.cpp in Sources */,
+				D000548C1D08483200E50F16 /* app.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

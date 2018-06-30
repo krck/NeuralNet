@@ -30,15 +30,10 @@
  *************************************************************************************/
 
 #pragma once
-#ifndef Layer_h
-#define Layer_h
 
-#include "Settings.h"
 #include "Neuron.h"
 
-
 enum class LayerType {Input, Hidden, Output};
-
 
 class Layer {
 private:
@@ -54,7 +49,7 @@ public:
     }
     
     
-    void setInputValues(const std::vector<double>& inputValues) {
+    void setInputValues(const std::vector<float>& inputValues) {
         if(this->type == LayerType::Input) {
             // Check if there is one input Value for each input Neuron (- Bias)
             if(inputValues.size() == this->getNeuronCountNoBias()) {
@@ -69,7 +64,7 @@ public:
         // Forward Propagate the inputValues throug each Neuron of the Layer (- Bias)
         for(ulong i = 0; i < this->getNeuronCountNoBias(); i++) {
             const ulong index = this->neurons[i].index;
-            double sum = 0.0f;
+            float sum = 0.0f;
             // Sum up all Outputs from the previous Layer (with the Bias Neuron)
             for(const Neuron& n : prev.getNeurons()) { sum += (n.outputValue * n.outputWeights[index].weight); }
             // Apply the sigmoid function to shape the output value (curve between 0.0 and 1.0)
@@ -79,11 +74,11 @@ public:
     
     
     // Calculate the new Gradients of the Output-Layer Neurons
-    void calculateGradients(const std::vector<double>& expOutputs) {
+    void calculateGradients(const std::vector<float>& expOutputs) {
         if(this->type == LayerType::Output) {
             for(ulong i = 0; i < this->getNeuronCountNoBias(); i++) {
-                const double outputVal = this->neurons[i].outputValue;
-                const double delta = expOutputs[i] - outputVal;
+                const float outputVal = this->neurons[i].outputValue;
+                const float delta = expOutputs[i] - outputVal;
                 this->neurons[i].gradient = delta * gradientFunction(outputVal);
             }
         } else { std::cout <<"ERROR: Trying to calculate OutputGradients on a non Output-Layer" <<std::endl; }
@@ -94,8 +89,8 @@ public:
     void calculateGradients(const Layer& next) {
         if(this->type == LayerType::Hidden) {
             for(ulong i = 0; i < this->getNeuronCount(); i++) {
-                const double outputVal = this->neurons[i].outputValue;
-                double dow = 0.0f;
+                const float outputVal = this->neurons[i].outputValue;
+                float dow = 0.0f;
                 // Sum up all contributions of the errors, to the Neurons in the next Layer
                 for(ulong j = 0; j < next.getNeuronCountNoBias(); j++) {
                     dow += (this->neurons[i].outputWeights[j].weight * next.getNeuron(j).gradient);
@@ -124,13 +119,13 @@ public:
     
     
     // Calculate the overall Output Layer error (RMS)
-    double getError(const std::vector<double>& expOutputs) const {
-        double tmperror = 0.0f;
+    float getError(const std::vector<float>& expOutputs) const {
+        float tmperror = 0.0f;
         if(this->type == LayerType::Output) {
             if(expOutputs.size() == this->getNeuronCountNoBias()) {
                 // Add up all the deltas between actual outputs and expected outputs (- 1 Bias)
                 for(ulong i = 0; i < this->getNeuronCountNoBias(); i++) {
-                    const double delta = expOutputs[i] - this->neurons[i].outputValue;
+                    const float delta = expOutputs[i] - this->neurons[i].outputValue;
                     // tmperror stores the sum of the squares of all output value deltas
                     tmperror += (delta * delta);
                 }
@@ -145,8 +140,8 @@ public:
     
     
     // Get all the neuron outputs from the output layer (- Bias)
-    std::vector<double> getResults() const {
-        std::vector<double> tmpres;
+    std::vector<float> getResults() const {
+        std::vector<float> tmpres;
         if(this->type == LayerType::Output) {
             for(const Neuron& n : this->neurons) { tmpres.push_back(n.outputValue); }
             tmpres.pop_back();
@@ -165,12 +160,9 @@ public:
 private:
     // The Sigmoid Function (having an S shaped curve) produces a output value between 0.0 and 1.0
     // Definition:  s(t) = 1 / 1 + e^-t
-    inline double sigmoidFunction(double sum) const { return  (1.0f / (1.0f + exp(sum * -1.0f))); }
+    inline float sigmoidFunction(float sum) const { return  (1.0f / (1.0f + exp(sum * -1.0f))); }
     
     // OLD "transferFunctionDerivative": return (1.0 - (sum * sum));
-    inline double gradientFunction(double sum) const { return (exp(sum * -1.0f) / pow(exp(sum * -1.0f) + 1.0f, 2.0f)); }
+    inline float gradientFunction(float sum) const { return (exp(sum * -1.0f) / pow(exp(sum * -1.0f) + 1.0f, 2.0f)); }
     
 };
-
-#endif
-
