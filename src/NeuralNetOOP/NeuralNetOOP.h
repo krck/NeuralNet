@@ -36,8 +36,8 @@
 
 class NeuralNetOOP {
 private:
-    float netError;
-    float recentAverageError;
+    double netError;
+    double recentAverageError;
     std::vector<Layer> layers;
     
 public:
@@ -69,7 +69,7 @@ public:
 
     
 private:
-    void feedForward(const std::vector<float>& inputValues) {
+    void feedForward(const std::vector<double>& inputValues) {
         // Pass the input values to the input Layer
         this->layers.front().setInputValues(inputValues);
         // Loop throug each (hidden and output) Layer to call "feedForward"
@@ -77,7 +77,7 @@ private:
     }
     
     
-    void backPropagate(const std::vector<float>& expOutputs) {
+    void backPropagate(const std::vector<double>& expOutputs) {
         // Get the overall net error and calculate the recent average measurement
         this->netError = this->layers.back().getError(expOutputs);
         this->recentAverageError = (recentAverageError * SMOOTHING_FACTOR + netError) / (SMOOTHING_FACTOR + 1.0);
@@ -101,7 +101,7 @@ public:
     
     // Feed the test data to the net and write all results to a file
     void test(MNIST& mnist, const std::string& resultsPath) {
-        float errSum = 0.0f;
+        double errSum = 0.0f;
         int recognizeCount = 0;
         std::vector<std::string> outputStrings = std::vector<std::string>();
         // Add some general output with the overall error values
@@ -122,7 +122,7 @@ public:
             // generate the exprected / actual results table
             outputStrings.push_back("\n");
             for(ulong i = 0; i < t.output.size(); i++) {
-                outputStrings.push_back(std::to_string((int)t.output[i]) + "\t\t\t" + std::to_string((float)result[i]));
+                outputStrings.push_back(std::to_string((int)t.output[i]) + "\t\t\t" + std::to_string((double)result[i]));
             }
             // generate the networks guess
             outputStrings.push_back("\n");
@@ -150,7 +150,7 @@ public:
         errSum = (errSum / mnist.testData.size());
         outputStrings[0] += std::to_string(errSum);
         // Calculate percentage of correctly recognized digits
-        float percent = ((float)recognizeCount / mnist.testData.size()) * 100.0f;
+        double percent = ((double)recognizeCount / mnist.testData.size()) * 100.0f;
         outputStrings[1] += (std::to_string((int)percent) + "%  (" + std::to_string(recognizeCount)
                                     + " / " + std::to_string(mnist.testData.size()) + ")");
         // WRITE ALL THE TEST OUTPUTS TO A FILE

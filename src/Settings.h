@@ -69,11 +69,11 @@
 #define swap32(n)                   ((swap16((n&0xFFFF0000)>>16))|((swap16(n&0x0000FFFF))<<16))
 
 // Generate Random Number between 0.0f and 1.0f
-#define random_0_1                  (rand() / (float)RAND_MAX)
+#define random_0_1                  ((rand() % 10000 + 1)/10000-0.5)
 
 // Custom type definitions
 typedef unsigned long               ulong;
 typedef unsigned char               byte;
 typedef std::vector<ulong>          Topology;
-typedef std::vector<float>          Vector;
-typedef std::vector<float>          Matrix;
+typedef std::vector<double>         Vector;
+typedef std::vector<double>         Matrix;

@@ -34,46 +34,45 @@
 #include "NetMath.h"
 
 class NeuralNetVec {
-    
 private:
     const Topology _layers;
-    const size_t _layerCount, _lastLayer, _hiddenLayerCount;
-    const float _learningRate;
-    std::vector<Vector> _neuronVectors;         // H
-    std::vector<Matrix> _weights;               // W
-    std::vector<Vector> _biases;                // B
-    std::vector<Matrix> _weightDeltas;          // dEdW
-    std::vector<Vector> _biasDeltas;            // dEdB
+    const long _layerCount, _lastLayer, _hiddenLayerCount;
+    const double _learningRate;
+    std::vector<Vector> _neuronVectors;     // H
+    std::vector<Matrix> _weights;           // W
+    std::vector<Vector> _biases;            // B
+    std::vector<Matrix> _weightDeltas;      // dEdW
+    std::vector<Vector> _biasDeltas;        // dEdB
     
 public:
-    NeuralNetVec(const Topology& layers, float learningRate)
+    NeuralNetVec(const Topology& layers, double learningRate)
     : _layers(layers), _layerCount(layers.size()), _lastLayer(_layerCount - 1), _hiddenLayerCount(_layerCount - 2), _learningRate(learningRate) {
-        _neuronVectors = std::vector<Vector>(_layerCount);        // Each Layer has a neuron vector (Input/Hidden/Output)
-        _weights = std::vector<Matrix>(_lastLayer);                // Each Layer holds the weights for the next layers neurons (-1 for Output)
-        _biases = std::vector<Vector>(_lastLayer);                // Each Layer holds the biases for the next layers neurons (-1 for Output)
+        _neuronVectors = std::vector<Vector>(_layerCount);      // Each Layer has a neuron vector (Input/Hidden/Output)
+        _weights = std::vector<Matrix>(_lastLayer);             // Each Layer holds the weights for the next layers neurons (-1 for Output)
+        _biases = std::vector<Vector>(_lastLayer);              // Each Layer holds the biases for the next layers neurons (-1 for Output)
         _weightDeltas = std::vector<Matrix>(_lastLayer);
         _biasDeltas = std::vector<Vector>(_lastLayer);
         
         // Initialize all weight matrices and bias vectors with random values
-        for (size_t i = 0; i < _lastLayer; i++) {
+        for (long i = 0; i < _lastLayer; i++) {
             // Weight matrix (rows = nextLayerNeurons, columns = thisLayerNeurons)
             _weights[i] = Matrix(_layers[i + 1] * _layers[i]);
-            for (size_t mc = 0; mc < _weights[i].size(); mc++) {
+            for (long mc = 0; mc < _weights[i].size(); mc++) {
                 _weights[i][mc] = random_0_1;
             }
             
             // Bias vectors (length = nextLayerNeutrons)
             _biases[i] = Vector(_layers[i + 1]);
-            for (size_t bc = 0; bc < _biases[i].size(); bc++) {
+            for (long bc = 0; bc < _biases[i].size(); bc++) {
                 _biases[i][bc] = random_0_1;
             }
         }
     }
     
     
-    void Train(size_t iterations, const std::vector<Vector>& trainingInput, const std::vector<Vector>& trainingOutput) {
-        for (size_t i = 0; i < iterations; i++) {
-            for (size_t t = 0; t < trainingInput.size(); t++) {
+    void Train(long iterations, const std::vector<Vector>& trainingInput, const std::vector<Vector>& trainingOutput) {
+        for (long i = 0; i < iterations; i++) {
+            for (long t = 0; t < trainingInput.size(); t++) {
                 FeedForward(trainingInput[t]);
                 BackPropagate(trainingOutput[t]);
             }
@@ -85,7 +84,7 @@ public:
     Vector FeedForward(const Vector& input) {
         _neuronVectors[0] = input; // Set the input layer == the input
         
-        for (size_t i = 1; i < _layerCount; i++) {
+        for (long i = 1; i < _layerCount; i++) {
             _neuronVectors[i] = CalculateDotSigmoid(_weights[i - 1], _neuronVectors[i - 1], _biases[i - 1], _layers[i]);
         }
         
@@ -100,18 +99,18 @@ public:
         
         // tmp = H[hiddenLayersCount].dot(W[hiddenLayersCount]).add(B[hiddenLayersCount]).applyFunction(sigmoidePrime)
         // dEdB[hiddenLayersCount] = H[hiddenLayersCount + 1].subtract(_neuronVectors.back()).multiply(tmp)
-        Vector tmp = CalculateDotSigmoidPrime(_weights[_hiddenLayerCount], _neuronVectors[_hiddenLayerCount], _biases[_hiddenLayerCount], _layers[_lastLayer]);
+        auto tmp = CalculateDotSigmoidPrime(_weights[_hiddenLayerCount], _neuronVectors[_hiddenLayerCount], _biases[_hiddenLayerCount], _layers[_lastLayer]);
         _biasDeltas[_hiddenLayerCount] = CalculateLastBiasDelta(_neuronVectors.back(), expectedOutput, tmp);
         
         for (long i = _hiddenLayerCount - 1; i >= 0; i--)
         {
             //dEdB[i] = dEdB[i + 1].dot(W[i + 1].transpose()).multiply(    H[i].dot(W[i]).add(B[i]).applyFunction(sigmoidePrime)   );
-            const Vector sigPresult = CalculateDotSigmoidPrime(_weights[i], _neuronVectors[i], _biases[i], _layers[i + 1]);
+            auto sigPresult = CalculateDotSigmoidPrime(_weights[i], _neuronVectors[i], _biases[i], _layers[i + 1]);
             _biasDeltas[i] = CalculateBiasDelta(_biasDeltas[i + 1], _weights[i + 1], _layers[i + 2], _layers[i + 1], sigPresult);
         }
         
         // Calculate the weight gradients and update all weights and biases
-        for (size_t i = 0; i < _lastLayer; i++) {
+        for (long i = 0; i < _lastLayer; i++) {
             // dEdW[i] = H[i].transpose().dot(dEdB[i])
             _weightDeltas[i] = CalculateWeightDelta(_neuronVectors[i], _biasDeltas[i]);
             
@@ -121,6 +120,7 @@ public:
             _biases[i] = UpdateBias(_biases[i], _biasDeltas[i], _learningRate);
         }
     }
+    
     
     // Feed the test data to the net and write all results to a file
     void test(MNIST& mnist, const std::string& resultsPath) {

@@ -36,8 +36,8 @@
 // Weight and DeltaWeight for each connection of the
 // Neuron, to the Neurons in the next Layer
 struct Connection {
-    float weight;
-    float deltaWeight;
+    double weight;
+    double deltaWeight;
     
     Connection() : weight(random_0_1), deltaWeight(0.0f) { }
 };
@@ -45,8 +45,8 @@ struct Connection {
 // Simple Sigmoid Neuron
 struct Neuron {
     const ulong index;                          // Index of the Neuron in it's Layer
-    float outputValue;                         // Value of the Neuron given to all Neurons in the next Layer
-    float gradient;                            // used by the backpropagation
+    double outputValue;                         // Value of the Neuron given to all Neurons in the next Layer
+    double gradient;                            // used by the backpropagation
     std::vector<Connection> outputWeights;      // Output weight values for all connected Neurons in the next Layer
     
     // Fully connected Net: One Connection for each Neuron in the next Layer

@@ -37,12 +37,13 @@
 
 #include "../NetBase.h"
 
-Vector CalculateDotSigmoid(const Matrix& weights, const Vector& values, const Vector& bias, const size_t matRows) {
-    const size_t matColumns = values.size();
+
+Vector CalculateDotSigmoid(const Matrix& weights, const Vector& values, const Vector& bias, const long matRows) {
+    const long matColumns = values.size();
     Vector result(matRows);
     
-    for (size_t r = 0; r < matRows; r++) {
-        for (size_t c = 0; c < matColumns; c++) {
+    for (long r = 0; r < matRows; r++) {
+        for (long c = 0; c < matColumns; c++) {
             // Get the dot product (sum of multiplications)
             // of the weight-matix and value-vector for each row
             result[r] += (weights[r * matColumns + c] * values[c]);
@@ -55,13 +56,13 @@ Vector CalculateDotSigmoid(const Matrix& weights, const Vector& values, const Ve
 }
 
 
-Vector CalculateDotSigmoidPrime(const Matrix& weights, const Vector& values, const Vector& bias, const size_t matRows) {
-    const size_t matColumns = values.size();
+Vector CalculateDotSigmoidPrime(const Matrix& weights, const Vector& values, const Vector& bias, const long matRows) {
+    const long matColumns = values.size();
     Vector result(matRows);
-    float tmp = 0.0f;
+    double tmp = 0.0f;
     
-    for (size_t r = 0; r < matRows; r++) {
-        for (size_t c = 0; c < matColumns; c++) {
+    for (long r = 0; r < matRows; r++) {
+        for (long c = 0; c < matColumns; c++) {
             // Get the dot product (sum of multiplications)
             // of the weight-matix and value-vector for each row
             result[r] += (weights[r * matColumns + c] * values[c]);
@@ -79,7 +80,7 @@ Vector CalculateDotSigmoidPrime(const Matrix& weights, const Vector& values, con
 Vector CalculateLastBiasDelta(const Vector& netOutput, const Vector& expectedOutput, const Vector& dotSigmoidPrime) {
     Vector result(netOutput.size());
     
-    for (size_t i = 0; i < netOutput.size(); i++) {
+    for (long i = 0; i < netOutput.size(); i++) {
         result[i] = (netOutput[i] - expectedOutput[i]) * dotSigmoidPrime[i];
     }
     
@@ -88,29 +89,29 @@ Vector CalculateLastBiasDelta(const Vector& netOutput, const Vector& expectedOut
 
 
 //dEdB[i] = dEdB[i+1] .dot( W[i+1].transpose()).  multiply  (H[i].dot(W[i]).add(B[i]).applyFunction(sigmoidePrime));
-Vector CalculateBiasDelta(const Vector& nextBiasDelta, const Matrix& nextWeights, const size_t rows, const size_t columns, const Vector& dotSigmoidPrime) {
+Vector CalculateBiasDelta(const Vector& nextBiasDelta, const Matrix& nextWeights, const long rows, const long columns, const Vector& dotSigmoidPrime) {
     Vector result(dotSigmoidPrime.size());
     
     // Transpose weight mat
     Matrix transposedWeights(nextWeights.size());
-    for (size_t n = 0; n != nextWeights.size(); n++) {
+    for (long n = 0; n != nextWeights.size(); n++) {
         transposedWeights[n] = nextWeights[rows * (n % columns) + (n / columns)];
     }
     
     // Calculate nextBiasDelta DOT transposedWeights (column count is now row count)
-    const size_t matColumns = nextBiasDelta.size();
-    const size_t matRows = columns;
+    const long matColumns = nextBiasDelta.size();
+    const long matRows = columns;
     Vector dotResult(matRows);
     
-    for (size_t r = 0; r < matRows; r++) {
-        for (size_t c = 0; c < matColumns; c++) {
+    for (long r = 0; r < matRows; r++) {
+        for (long c = 0; c < matColumns; c++) {
             // Get the dot product (sum of multiplications)
             dotResult[r] += (transposedWeights[r * matColumns + c] * nextBiasDelta[c]);
         }
     }
     
     // dotResult * dotSigmoidPrime
-    for (size_t i = 0; i < dotSigmoidPrime.size(); i++) {
+    for (long i = 0; i < dotSigmoidPrime.size(); i++) {
         result[i] = dotResult[i] * dotSigmoidPrime[i];
     }
     
@@ -133,9 +134,9 @@ Matrix CalculateWeightDelta(const Vector& neurons, const Vector& biasDelta) {
 
 
 // W[i].subtract(dEdW[i].multiply(learningRate))
-Matrix UpdateWeight(const Matrix& weight, const Matrix& weightDelta, const float learnRate) {
+Matrix UpdateWeight(const Matrix& weight, const Matrix& weightDelta, const double learnRate) {
     Matrix result(weight.size());
-    for (size_t i = 0; i < weight.size(); i++) {
+    for (long i = 0; i < weight.size(); i++) {
         result[i] = (weight[i] - (weightDelta[i] * learnRate));
     }
     return result;
@@ -143,9 +144,9 @@ Matrix UpdateWeight(const Matrix& weight, const Matrix& weightDelta, const float
 
 
 // B[i].subtract(dEdB[i].multiply(learningRate))
-Vector UpdateBias(const Vector& bias, const Vector& biasDelta, const float learnRate) {
+Vector UpdateBias(const Vector& bias, const Vector& biasDelta, const double learnRate) {
     Vector result(bias.size());
-    for (size_t i = 0; i < bias.size(); i++) {
+    for (long i = 0; i < bias.size(); i++) {
         result[i] = (bias[i] - (biasDelta[i] * learnRate));
     }
     return result;
